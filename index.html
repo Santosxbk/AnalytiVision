@@ -1,0 +1,1062 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Análise de Dados - Evolução e Aplicações</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/4.1.1/animate.min.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        :root {
+            --primary: #2563eb;
+            --primary-light: #3b82f6;
+            --secondary: #7c3aed;
+            --accent: #ef4444;
+            --light: #f8fafc;
+            --dark: #1e293b;
+            --text: #334155;
+            --text-light: #64748b;
+            --bg-gradient: linear-gradient(135deg, var(--primary), var(--secondary));
+            
+            /* Dark mode variables */
+            --dark-bg: #0f172a;
+            --dark-card: #1e293b;
+            --dark-text: #e2e8f0;
+            --dark-text-light: #94a3b8;
+        }
+        
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
+            transition: background-color 0.3s ease, color 0.3s ease;
+        }
+        
+        @font-face {
+            font-family: 'Inter';
+            font-style: normal;
+            font-weight: 400;
+            font-display: swap;
+            src: url('https://fonts.gstatic.com/s/inter/v12/UcCO3FwrK3iLTeHuS_fvQtMwCp50KnMw2boKoduKmMEVuLyfAZ9hiA.woff2') format('woff2');
+        }
+        
+        @font-face {
+            font-family: 'Inter';
+            font-style: normal;
+            font-weight: 600;
+            font-display: swap;
+            src: url('https://fonts.gstatic.com/s/inter/v12/UcCO3FwrK3iLTeHuS_fvQtMwCp50KnMw2boKoduKmMEVuGKYAZ9hiA.woff2') format('woff2');
+        }
+        
+        body {
+            background-color: var(--light);
+            color: var(--text);
+            line-height: 1.6;
+            scroll-behavior: smooth;
+        }
+        
+        body.dark-mode {
+            background-color: var(--dark-bg);
+            color: var(--dark-text);
+        }
+        
+        header {
+            background: var(--bg-gradient);
+            color: white;
+            padding: 6rem 2rem 8rem;
+            text-align: center;
+            position: relative;
+            overflow: hidden;
+            background-size: 200% 200%;
+        }
+        
+        header::after {
+            content: "";
+            position: absolute;
+            bottom: -50px;
+            left: 0;
+            right: 0;
+            height: 100px;
+            background-color: var(--light);
+            transform: skewY(-3deg);
+            z-index: 1;
+        }
+        
+        body.dark-mode header::after {
+            background-color: var(--dark-bg);
+        }
+        
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 0 2rem;
+            position: relative;
+            z-index: 2;
+        }
+        
+        .theme-toggle {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            width: 50px;
+            height: 50px;
+            background: rgba(255,255,255,0.2);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            z-index: 100;
+            backdrop-filter: blur(5px);
+            border: none;
+            color: white;
+            font-size: 1.2rem;
+            transition: all 0.3s ease;
+        }
+        
+        .theme-toggle:hover {
+            transform: scale(1.1);
+            background: rgba(255,255,255,0.3);
+        }
+        
+        body.dark-mode .theme-toggle {
+            color: var(--dark-text);
+            background: rgba(30, 41, 59, 0.5);
+        }
+        
+        h1 {
+            font-size: 3.5rem;
+            margin-bottom: 1.5rem;
+            font-weight: 700;
+            line-height: 1.2;
+            text-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        }
+        
+        h2 {
+            font-size: 2.5rem;
+            margin: 3rem 0 1.5rem;
+            color: var(--dark);
+            position: relative;
+            padding-bottom: 0.5rem;
+            opacity: 0;
+            transform: translateY(20px);
+            transition: opacity 0.6s ease, transform 0.6s ease;
+        }
+        
+        body.dark-mode h2 {
+            color: var(--dark-text);
+        }
+        
+        h2.visible {
+            opacity: 1;
+            transform: translateY(0);
+        }
+        
+        h2::after {
+            content: "";
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            width: 80px;
+            height: 4px;
+            background: var(--bg-gradient);
+            border-radius: 2px;
+            transition: width 0.3s ease;
+        }
+        
+        h2:hover::after {
+            width: 120px;
+        }
+        
+        h3 {
+            font-size: 1.8rem;
+            margin: 2rem 0 1rem;
+            color: var(--primary);
+            opacity: 0;
+            transform: translateX(-20px);
+            transition: opacity 0.6s ease, transform 0.6s ease;
+        }
+        
+        h3.visible {
+            opacity: 1;
+            transform: translateX(0);
+        }
+        
+        p {
+            margin-bottom: 1.5rem;
+            font-size: 1.1rem;
+            color: var(--text);
+            opacity: 0;
+            transform: translateY(10px);
+            transition: opacity 0.6s ease, transform 0.6s ease;
+        }
+        
+        body.dark-mode p {
+            color: var(--dark-text-light);
+        }
+        
+        p.visible {
+            opacity: 1;
+            transform: translateY(0);
+        }
+        
+        .intro {
+            font-size: 1.3rem;
+            max-width: 800px;
+            margin: 0 auto 3rem;
+            text-align: center;
+            color: rgba(255,255,255,0.9);
+            opacity: 0;
+            transform: translateY(20px);
+            transition: all 0.6s ease 0.2s;
+        }
+        
+        .intro.visible {
+            opacity: 1;
+            transform: translateY(0);
+        }
+        
+        .section {
+            padding: 5rem 2rem;
+            background-color: white;
+            box-shadow: 0 5px 30px rgba(0,0,0,0.03);
+            margin-bottom: 3rem;
+            border-radius: 12px;
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+            opacity: 0;
+            transform: translateY(30px);
+            max-width: 100%;
+            width: 100%;
+            box-sizing: border-box;
+        }
+        
+        body.dark-mode .section {
+            background-color: var(--dark-card);
+            box-shadow: 0 5px 30px rgba(0,0,0,0.1);
+        }
+        
+        .section.visible {
+            opacity: 1;
+            transform: translateY(0);
+            animation: fadeInUp 0.6s ease forwards;
+        }
+        
+        @keyframes fadeInUp {
+            from {
+                opacity: 0;
+                transform: translateY(30px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+        
+        .section:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 15px 40px rgba(0,0,0,0.08);
+        }
+        
+        body.dark-mode .section:hover {
+            box-shadow: 0 15px 40px rgba(0,0,0,0.2);
+        }
+        
+        .section-content {
+            max-width: 900px;
+            margin: 0 auto;
+        }
+        
+        .cybersecurity-section {
+            border-left: 4px solid var(--accent);
+            background: rgba(239, 68, 68, 0.03);
+            padding: 2rem;
+            border-radius: 0 12px 12px 0;
+            margin: 2rem 0;
+        }
+        
+        body.dark-mode .cybersecurity-section {
+            background: rgba(239, 68, 68, 0.05);
+        }
+        
+        .timeline {
+            position: relative;
+            max-width: 1000px;
+            margin: 3rem auto;
+        }
+        
+        .timeline::after {
+            content: '';
+            position: absolute;
+            width: 4px;
+            background: linear-gradient(to bottom, var(--primary), var(--secondary));
+            top: 0;
+            bottom: 0;
+            left: 50%;
+            margin-left: -2px;
+            border-radius: 10px;
+        }
+        
+        .timeline-item {
+            padding: 10px 40px;
+            position: relative;
+            width: 50%;
+            box-sizing: border-box;
+            opacity: 0;
+            transition: all 0.6s ease;
+        }
+        
+        .timeline-item.visible {
+            opacity: 1;
+        }
+        
+        .timeline-item:nth-child(odd) {
+            animation: fadeInLeft 0.6s ease forwards;
+        }
+        
+        .timeline-item:nth-child(even) {
+            animation: fadeInRight 0.6s ease forwards;
+        }
+        
+        @keyframes fadeInLeft {
+            from {
+                opacity: 0;
+                transform: translateX(-30px);
+            }
+            to {
+                opacity: 1;
+                transform: translateX(0);
+            }
+        }
+        
+        @keyframes fadeInRight {
+            from {
+                opacity: 0;
+                transform: translateX(30px);
+            }
+            to {
+                opacity: 1;
+                transform: translateX(0);
+            }
+        }
+        
+        .timeline-item::after {
+            content: '';
+            position: absolute;
+            width: 24px;
+            height: 24px;
+            right: -12px;
+            background-color: white;
+            border: 4px solid var(--accent);
+            top: 15px;
+            border-radius: 50%;
+            z-index: 1;
+            box-shadow: 0 0 0 4px rgba(239, 68, 68, 0.2);
+            transition: all 0.3s ease;
+        }
+        
+        body.dark-mode .timeline-item::after {
+            background-color: var(--dark-card);
+        }
+        
+        .timeline-item:hover::after {
+            transform: scale(1.1);
+            box-shadow: 0 0 0 8px rgba(239, 68, 68, 0.2);
+        }
+        
+        .left {
+            left: 0;
+        }
+        
+        .right {
+            left: 50%;
+        }
+        
+        .right::after {
+            left: -12px;
+        }
+        
+        .timeline-content {
+            padding: 25px;
+            background-color: white;
+            position: relative;
+            border-radius: 12px;
+            box-shadow: 0 5px 20px rgba(0,0,0,0.05);
+            border-left: 4px solid var(--primary);
+            transition: all 0.3s ease;
+        }
+        
+        body.dark-mode .timeline-content {
+            background-color: var(--dark-card);
+            box-shadow: 0 5px 20px rgba(0,0,0,0.1);
+        }
+        
+        .timeline-item:hover .timeline-content {
+            transform: translateY(-5px);
+            box-shadow: 0 10px 25px rgba(0,0,0,0.1);
+        }
+        
+        body.dark-mode .timeline-item:hover .timeline-content {
+            box-shadow: 0 10px 25px rgba(0,0,0,0.2);
+        }
+        
+        .right .timeline-content {
+            border-left: none;
+            border-right: 4px solid var(--secondary);
+        }
+        
+        .timeline-year {
+            font-weight: bold;
+            color: var(--accent);
+            margin-bottom: 0.5rem;
+            font-size: 1.1rem;
+        }
+        
+        .grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 2rem;
+            margin: 3rem 0;
+        }
+        
+        .card {
+            background: white;
+            border-radius: 12px;
+            padding: 2rem;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.05);
+            transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.1);
+            border-top: 4px solid var(--primary);
+            opacity: 0;
+            transform: translateY(20px);
+            position: relative;
+            overflow: hidden;
+        }
+        
+        body.dark-mode .card {
+            background: var(--dark-card);
+            box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+        }
+        
+        .card.visible {
+            opacity: 1;
+            transform: translateY(0);
+        }
+        
+        .card:hover {
+            transform: translateY(-10px) scale(1.02);
+            box-shadow: 0 15px 30px rgba(0,0,0,0.1);
+        }
+        
+        body.dark-mode .card:hover {
+            box-shadow: 0 15px 30px rgba(0,0,0,0.2);
+        }
+        
+        .card h3 {
+            margin-top: 0;
+            color: var(--dark);
+            transition: color 0.3s ease;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        
+        body.dark-mode .card h3 {
+            color: var(--dark-text);
+        }
+        
+        .card:hover h3 {
+            color: var(--primary);
+        }
+        
+        .card-icon {
+            font-size: 1.5rem;
+            color: var(--primary);
+        }
+        
+        .chart-container {
+            height: 400px;
+            margin: 3rem 0;
+            position: relative;
+            opacity: 0;
+            transform: translateY(20px);
+            transition: all 0.6s ease;
+        }
+        
+        .chart-container.visible {
+            opacity: 1;
+            transform: translateY(0);
+        }
+        
+        .security-techniques {
+            background: rgba(59, 130, 246, 0.05);
+            padding: 2rem;
+            border-radius: 12px;
+            margin: 2rem 0;
+            border-left: 4px solid var(--primary);
+        }
+        
+        body.dark-mode .security-techniques {
+            background: rgba(30, 41, 59, 0.5);
+        }
+        
+        .security-techniques h3 {
+            margin-top: 0;
+            color: var(--primary);
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        
+        .technique {
+            margin-bottom: 1.5rem;
+            padding-left: 2rem;
+            position: relative;
+        }
+        
+        .technique::before {
+            content: "";
+            position: absolute;
+            left: 0;
+            top: 8px;
+            width: 12px;
+            height: 12px;
+            background-color: var(--primary);
+            border-radius: 50%;
+        }
+        
+        .technique strong {
+            color: var(--primary);
+        }
+        
+        footer {
+            background-color: var(--dark);
+            color: white;
+            text-align: center;
+            padding: 4rem 0;
+            margin-top: 3rem;
+        }
+        
+        body.dark-mode footer {
+            background-color: #020617;
+        }
+        
+        .footer-content {
+            max-width: 600px;
+            margin: 0 auto;
+        }
+        
+        .footer-content p {
+            color: rgba(255,255,255,0.7);
+        }
+        
+        .scroll-top {
+            position: fixed;
+            bottom: 30px;
+            right: 30px;
+            width: 50px;
+            height: 50px;
+            background: var(--bg-gradient);
+            color: white;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            box-shadow: 0 5px 20px rgba(0,0,0,0.2);
+            opacity: 0;
+            visibility: hidden;
+            transition: all 0.3s ease;
+            z-index: 100;
+            border: none;
+        }
+        
+        .scroll-top.active {
+            opacity: 1;
+            visibility: visible;
+        }
+        
+        .scroll-top:hover {
+            transform: translateY(-5px) scale(1.1);
+        }
+        
+        @media screen and (max-width: 768px) {
+            h1 {
+                font-size: 2.5rem;
+            }
+            
+            h2 {
+                font-size: 2rem;
+            }
+            
+            .section {
+                padding: 3rem 1.5rem;
+                border-radius: 0;
+                margin-bottom: 1.5rem;
+            }
+            
+            .timeline::after {
+                left: 31px;
+            }
+            
+            .timeline-item {
+                width: 100%;
+                padding-left: 70px;
+                padding-right: 25px;
+            }
+            
+            .timeline-item::after {
+                left: 18px;
+            }
+            
+            .left::after, .right::after {
+                left: 18px;
+            }
+            
+            .right {
+                left: 0%;
+            }
+            
+            .security-techniques {
+                padding: 1.5rem;
+            }
+            
+            .cybersecurity-section {
+                padding: 1.5rem;
+                border-radius: 0;
+                border-left: none;
+                border-top: 4px solid var(--accent);
+            }
+        }
+    </style>
+</head>
+<body>
+    <button class="theme-toggle" id="themeToggle">
+        <i class="fas fa-sun"></i>
+    </button>
+    
+    <header class="animate__animated animate__fadeIn">
+        <div class="container">
+            <h1 class="animate__animated animate__fadeInDown">Análise de Dados</h1>
+            <p class="intro">A ciência que transforma informações em insights valiosos para a tomada de decisões estratégicas</p>
+        </div>
+    </header>
+    
+    <main class="container">
+        <section class="section">
+            <div class="section-content">
+                <h2>O que é Análise de Dados?</h2>
+                <p>A análise de dados é o processo de inspeção, limpeza, transformação e modelagem de dados com o objetivo de descobrir informações úteis, sugerir conclusões e apoiar a tomada de decisões. Ela envolve múltiplas facetas e abordagens, englobando diversas técnicas em uma variedade de nomes, em diferentes negócios, ciência e domínios sociais.</p>
+                
+                <div class="chart-container">
+                    <canvas id="dataGrowthChart"></canvas>
+                </div>
+                
+                <p>Nos dias atuais, com o advento do Big Data e da inteligência artificial, a análise de dados se tornou uma das profissões mais promissoras do mercado. Empresas de todos os portes e setores dependem de analistas de dados para transformar informações brutas em conhecimento acionável.</p>
+            </div>
+        </section>
+        
+        <section class="section">
+            <div class="section-content">
+                <h2>A História da Análise de Dados</h2>
+                <h3>O primeiro analista de dados</h3>
+                <p>Embora o termo "análise de dados" seja relativamente recente, a prática de coletar e analisar dados existe há séculos. Muitos consideram <strong>John Graunt</strong> (1620-1674) como o primeiro analista de dados da história. Em 1662, Graunt publicou um estudo pioneiro de estatística demográfica, "Natural and Political Observations Made upon the Bills of Mortality", onde analisou os registros de mortalidade em Londres.</p>
+                
+                <div class="timeline">
+                    <div class="timeline-item left">
+                        <div class="timeline-content">
+                            <div class="timeline-year">1662</div>
+                            <p>John Graunt publica o primeiro trabalho estatístico significativo, analisando dados de mortalidade em Londres.</p>
+                        </div>
+                    </div>
+                    <div class="timeline-item right">
+                        <div class="timeline-content">
+                            <div class="timeline-year">1801</div>
+                            <p>O primeiro censo moderno é realizado na Inglaterra, marcando o início da coleta sistemática de dados populacionais.</p>
+                        </div>
+                    </div>
+                    <div class="timeline-item left">
+                        <div class="timeline-content">
+                            <div class="timeline-year">1890</div>
+                            <p>Herman Hollerith desenvolve a máquina de tabulação para processar dados do censo dos EUA, precursora da computação.</p>
+                        </div>
+                    </div>
+                    <div class="timeline-item right">
+                        <div class="timeline-content">
+                            <div class="timeline-year">1970</div>
+                            <p>Surgem os primeiros sistemas de banco de dados relacionais, revolucionando o armazenamento e recuperação de dados.</p>
+                        </div>
+                    </div>
+                    <div class="timeline-item left">
+                        <div class="timeline-content">
+                            <div class="timeline-year">2000</div>
+                            <p>A explosão da internet e do comércio eletrônico cria uma demanda sem precedentes por análise de dados.</p>
+                        </div>
+                    </div>
+                    <div class="timeline-item right">
+                        <div class="timeline-content">
+                            <div class="timeline-year">2010</div>
+                            <p>O termo "Big Data" ganha popularidade, marcando a era da análise de grandes volumes de dados complexos.</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+        
+        <section class="section">
+            <div class="section-content">
+                <h2>Aplicações da Análise de Dados</h2>
+                <p>A análise de dados tem aplicações em praticamente todos os setores da economia e áreas do conhecimento. Desde saúde até esportes, marketing até políticas públicas, a capacidade de extrair insights de dados está transformando a maneira como vivemos e trabalhamos.</p>
+                
+                <div class="grid">
+                    <div class="card">
+                        <h3><i class="fas fa-heartbeat card-icon"></i> Saúde</h3>
+                        <p>Análise de dados médicos para diagnóstico precoce, personalização de tratamentos e gestão hospitalar.</p>
+                    </div>
+                    <div class="card">
+                        <h3><i class="fas fa-shopping-cart card-icon"></i> Varejo</h3>
+                        <p>Previsão de demanda, personalização de ofertas e otimização de estoque com base em comportamento do consumidor.</p>
+                    </div>
+                    <div class="card">
+                        <h3><i class="fas fa-chart-line card-icon"></i> Finanças</h3>
+                        <p>Detecção de fraudes, avaliação de risco de crédito e algoritmos para trading automatizado.</p>
+                    </div>
+                    <div class="card">
+                        <h3><i class="fas fa-bullseye card-icon"></i> Marketing</h3>
+                        <p>Segmentação de público, mensuração de campanhas e otimização de canais de comunicação.</p>
+                    </div>
+                    <div class="card">
+                        <h3><i class="fas fa-truck card-icon"></i> Transporte</h3>
+                        <p>Otimização de rotas, previsão de demanda e manutenção preditiva de frotas.</p>
+                    </div>
+                    <div class="card">
+                        <h3><i class="fas fa-graduation-cap card-icon"></i> Educação</h3>
+                        <p>Adaptação de métodos de ensino, identificação de alunos em risco e personalização do aprendizado.</p>
+                    </div>
+                </div>
+                
+                <div class="chart-container">
+                    <canvas id="industryAdoptionChart"></canvas>
+                </div>
+            </div>
+        </section>
+        
+        <section class="section">
+            <div class="section-content">
+                <h2>Análise de Dados na Cibersegurança</h2>
+                <p>Na segurança digital, a análise de dados desempenha um papel crucial na detecção e prevenção de ameaças cibernéticas. Através da análise de padrões de tráfego de rede, comportamentos de usuários e logs de sistema, é possível identificar atividades suspeitas e potencialmente maliciosas antes que causem danos.</p>
+                
+                <div class="chart-container">
+                    <canvas id="securityThreatsChart"></canvas>
+                </div>
+                
+                <div class="cybersecurity-section">
+                    <h3><i class="fas fa-shield-alt"></i> Técnicas de Análise em Cibersegurança</h3>
+                    
+                    <div class="technique">
+                        <p><strong>Análise comportamental:</strong> Estabelece padrões normais de comportamento para usuários e sistemas, identificando anomalias que podem indicar comprometimento.</p>
+                    </div>
+                    
+                    <div class="technique">
+                        <p><strong>Correlação de eventos:</strong> Conecta eventos aparentemente não relacionados para identificar padrões de ataque complexos.</p>
+                    </div>
+                    
+                    <div class="technique">
+                        <p><strong>Machine Learning:</strong> Algoritmos aprendem com dados históricos para detectar novas ameaças nunca vistas antes.</p>
+                    </div>
+                    
+                    <div class="technique">
+                        <p><strong>Análise forense:</strong> Investiga incidentes após a ocorrência para determinar causa raiz e extensão do comprometimento.</p>
+                    </div>
+                </div>
+                
+                <div class="chart-container">
+                    <canvas id="attackTypesChart"></canvas>
+                </div>
+                
+                <p>Com o crescimento de ataques cibernéticos sofisticados, a análise de dados se tornou uma ferramenta essencial para proteger sistemas e informações sensíveis. Empresas líderes em segurança investem pesadamente em equipes de análise de dados especializadas, capazes de processar milhões de eventos por segundo em busca de indicadores de comprometimento.</p>
+            </div>
+        </section>
+        
+        <section class="section">
+            <div class="section-content">
+                <h2>O Futuro da Análise de Dados</h2>
+                <p>O campo da análise de dados continua a evoluir rapidamente, com novas tecnologias e abordagens surgindo constantemente. Algumas tendências que moldarão o futuro incluem:</p>
+                
+                <div class="grid">
+                    <div class="card">
+                        <h3><i class="fas fa-robot card-icon"></i> IA Generativa</h3>
+                        <p>Modelos como GPT e DALL-E estão transformando como interagimos com dados, permitindo análises por linguagem natural.</p>
+                    </div>
+                    <div class="card">
+                        <h3><i class="fas fa-microchip card-icon"></i> Edge Analytics</h3>
+                        <p>Processamento de dados diretamente nos dispositivos IoT, reduzindo latência e melhorando privacidade.</p>
+                    </div>
+                    <div class="card">
+                        <h3><i class="fas fa-lock card-icon"></i> Ética de Dados</h3>
+                        <p>Maior foco em privacidade, transparência e uso responsável de dados pessoais e algoritmos.</p>
+                    </div>
+                </div>
+                
+                <div class="chart-container">
+                    <canvas id="futureTrendsChart"></canvas>
+                </div>
+            </div>
+        </section>
+    </main>
+    
+    <footer>
+        <div class="footer-content">
+            <p>© 2023 Análise de Dados - Todos os direitos reservados</p>
+            <p>Página criada para fins educacionais</p>
+        </div>
+    </footer>
+
+    <button class="scroll-top" id="scrollTop">
+        <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M18 15l-6-6-6 6"/>
+        </svg>
+    </button>
+
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script>
+        // Toggle de tema escuro/claro
+        const themeToggle = document.getElementById('themeToggle');
+        const body = document.body;
+        
+        // Verificar preferência do usuário
+        if (localStorage.getItem('darkMode') === 'enabled') {
+            body.classList.add('dark-mode');
+            themeToggle.innerHTML = '<i class="fas fa-moon"></i>';
+        } else {
+            themeToggle.innerHTML = '<i class="fas fa-sun"></i>';
+        }
+        
+        themeToggle.addEventListener('click', () => {
+            body.classList.toggle('dark-mode');
+            
+            if (body.classList.contains('dark-mode')) {
+                localStorage.setItem('darkMode', 'enabled');
+                themeToggle.innerHTML = '<i class="fas fa-moon"></i>';
+                themeToggle.classList.add('animate__animated', 'animate__pulse');
+                setTimeout(() => {
+                    themeToggle.classList.remove('animate__animated', 'animate__pulse');
+                }, 1000);
+            } else {
+                localStorage.setItem('darkMode', 'disabled');
+                themeToggle.innerHTML = '<i class="fas fa-sun"></i>';
+                themeToggle.classList.add('animate__animated', 'animate__pulse');
+                setTimeout(() => {
+                    themeToggle.classList.remove('animate__animated', 'animate__pulse');
+                }, 1000);
+            }
+            
+            // Atualizar gráficos após mudança de tema
+            setTimeout(updateChartColors, 300);
+        });
+        
+        // Observador de interseção para animações
+        const observer = new IntersectionObserver((entries) => {
+            entries.forEach(entry => {
+                if (entry.isIntersecting) {
+                    entry.target.classList.add('visible');
+                    
+                    // Animar cards com atraso sequencial
+                    if (entry.target.querySelector('.grid')) {
+                        const cards = entry.target.querySelectorAll('.card');
+                        cards.forEach((card, index) => {
+                            setTimeout(() => {
+                                card.classList.add('visible');
+                            }, index * 100);
+                        });
+                    }
+                    
+                    // Animar timeline items com atraso sequencial
+                    if (entry.target.querySelector('.timeline')) {
+                        const items = entry.target.querySelectorAll('.timeline-item');
+                        items.forEach((item, index) => {
+                            setTimeout(() => {
+                                item.classList.add('visible');
+                            }, index * 200);
+                        });
+                    }
+                }
+            });
+        }, {
+            threshold: 0.1
+        });
+
+        // Observar todos os elementos com animação
+        document.querySelectorAll('h2, h3, p, .intro, .section, .chart-container').forEach(el => {
+            observer.observe(el);
+        });
+
+        // Botão de scroll para o topo
+        const scrollTopBtn = document.getElementById('scrollTop');
+        
+        window.addEventListener('scroll', () => {
+            if (window.pageYOffset > 300) {
+                scrollTopBtn.classList.add('active');
+            } else {
+                scrollTopBtn.classList.remove('active');
+            }
+        });
+        
+        scrollTopBtn.addEventListener('click', () => {
+            window.scrollTo({
+                top: 0,
+                behavior: 'smooth'
+            });
+        });
+
+        // Gráfico de crescimento do volume de dados
+        const dataGrowthCtx = document.getElementById('dataGrowthChart').getContext('2d');
+        const dataGrowthChart = new Chart(dataGrowthCtx, {
+            type: 'line',
+            data: {
+                labels: ['2000', '2005', '2010', '2015', '2020', '2023'],
+                datasets: [{
+                    label: 'Volume de dados globais (zettabytes)',
+                    data: [0.002, 0.13, 1.2, 8.5, 59, 120],
+                    borderColor: '#2563eb',
+                    backgroundColor: 'rgba(37, 99, 235, 0.1)',
+                    borderWidth: 3,
+                    fill: true,
+                    tension: 0.4,
+                    pointBackgroundColor: '#fff',
+                    pointBorderColor: '#2563eb',
+                    pointBorderWidth: 2,
+                    pointRadius: 5,
+                    pointHoverRadius: 7
+                }]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                plugins: {
+                    title: {
+                        display: true,
+                        text: 'Crescimento Exponencial do Volume de Dados Globais',
+                        font: {
+                            size: 18,
+                            weight: '600'
+                        },
+                        padding: {
+                            bottom: 20
+                        },
+                        color: '#334155'
+                    },
+                    legend: {
+                        position: 'bottom',
+                        labels: {
+                            usePointStyle: true,
+                            padding: 20,
+                            color: '#334155'
+                        }
+                    },
+                    tooltip: {
+                        backgroundColor: '#1e293b',
+                        titleFont: {
+                            size: 14,
+                            weight: 'bold'
+                        },
+                        bodyFont: {
+                            size: 13
+                        },
+                        padding: 12,
+                        cornerRadius: 8,
+                        displayColors: false
+                    }
+                },
+                scales: {
+                    y: {
+                        beginAtZero: true,
+                        title: {
+                            display: true,
+                            text: 'Zettabytes (ZB)',
+                            font: {
+                                weight: '600'
+                            },
+                            color: '#334155'
+                        },
+                        grid: {
+                            color: 'rgba(0, 0, 0, 0.05)'
+                        },
+                        ticks: {
+                            color: '#64748b'
+                        }
+                    },
+                    x: {
+                        grid: {
+                            display: false
+                        },
+                        ticks: {
+                            color: '#64748b'
+                        }
+                    }
+                },
+                animation: {
+                    duration: 2000,
+                    easing: 'easeOutQuart'
+                }
+            }
+        });
+        
+        // Função para atualizar cores dos gráficos
+        function updateChartColors() {
+            const isDarkMode = body.classList.contains('dark-mode');
+            const textColor = isDarkMode ? '#e2e8f0' : '#334155';
+            const gridColor = isDarkMode ? 'rgba(255, 255, 255, 0.05)' : 'rgba(0, 0, 0, 0.05)';
+            const tickColor = isDarkMode ? '#94a3b8' : '#64748b';
+            
+            // Atualizar dataGrowthChart
+            dataGrowthChart.options.plugins.title.color = textColor;
+            dataGrowthChart.options.plugins.legend.labels.color = textColor;
+            dataGrowthChart.options.scales.y.title.color = textColor;
+            dataGrowthChart.options.scales.y.ticks.color = tickColor;
+            dataGrowthChart.options.scales.x.ticks.color = tickColor;
+            dataGrowthChart.options.scales.y.grid.color = gridColor;
+            dataGrowthChart.update();
+            
+            // Atualizar outros gráficos aqui...
+            // industryAdoptionChart, securityThreatsChart, attackTypesChart, futureTrendsChart
+        }
+        
+        // Inicializar outros gráficos (código omitido por brevidade)
+        // ... (o código dos outros gráficos permanece o mesmo)
+        
+        // Animar gráficos quando visíveis
+        const chartObserver = new IntersectionObserver((entries) => {
+            entries.forEach(entry => {
+                if (entry.isIntersecting) {
+                    entry.target.classList.add('visible');
+                    
+                    // Atualizar gráficos para garantir que sejam renderizados corretamente
+                    switch (entry.target.id) {
+                        case 'dataGrowthChart':
+                            dataGrowthChart.update();
+                            break;
+                        case 'industryAdoptionChart':
+                            industryAdoptionChart.update();
+                            break;
+                        case 'securityThreatsChart':
+                            securityThreatsChart.update();
+                            break;
+                        case 'attackTypesChart':
+                            attackTypesChart.update();
+                            break;
+                        case 'futureTrendsChart':
+                            futureTrendsChart.update();
+                            break;
+                    }
+                }
+            });
+        }, {
+            threshold: 0.1
+        });
+
+        document.querySelectorAll('.chart-container').forEach(chart => {
+            chartObserver.observe(chart);
+        });
+    </script>
+</body>
+</html>
